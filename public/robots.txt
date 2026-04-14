@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yesubureddy.dev/sitemap.xml
