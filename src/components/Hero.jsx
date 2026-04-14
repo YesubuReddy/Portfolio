@@ -286,16 +286,7 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Modern Scroll Indicator */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-10"
-      >
-        <div className="w-[1px] h-20 bg-gradient-to-b from-[var(--primary)] to-transparent opacity-40" />
-        <span className="text-[8px] font-black uppercase tracking-[0.4em] rotate-180 [writing-mode:vertical-lr]" style={{ color: 'var(--text-muted)' }}>Scroll to Discover</span>
-      </motion.div>
+
     </section>
   )
 }
