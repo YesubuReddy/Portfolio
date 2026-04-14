@@ -95,7 +95,7 @@ export default function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
   return (
-    <section ref={containerRef} id="about" className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6 overflow-hidden">
+    <section ref={containerRef} id="about" className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-4 sm:px-6 overflow-hidden">
       {/* Mesh Background */}
       <div className="absolute inset-0 pointer-events-none">
         <FloatingShape color="var(--primary)" size="600px" top="-10%" left="-10%" delay={0} duration={20} />
@@ -105,11 +105,11 @@ export default function Hero() {
       
       <div className="hero-grid opacity-20" />
 
-      <motion.div style={{ y: y1, opacity }} className="max-w-[1440px] mx-auto w-full px-4 md:px-12 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <motion.div style={{ y: y1, opacity }} className="max-w-[1440px] mx-auto w-full px-2 sm:px-4 md:px-12 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
 
           {/* LEFT CONTENT */}
-          <div className="space-y-8">
+          <div className="space-y-5 sm:space-y-8 text-center lg:text-left">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -149,7 +149,7 @@ export default function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="flex items-center gap-4"
+              className="flex items-center gap-4 justify-center lg:justify-start"
             >
               <div className="h-px w-12 bg-gradient-to-r from-[var(--primary)] to-transparent" />
               <p className="text-2xl font-bold tracking-tight" style={{ color: 'var(--text-main)' }}>
@@ -162,7 +162,7 @@ export default function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="text-lg md:text-xl leading-relaxed max-w-xl font-medium" 
+              className="text-base md:text-lg leading-relaxed font-medium max-w-xl mx-auto lg:mx-0" 
               style={{ color: 'var(--text-sub)' }}
             >
               Aspiring Software Developer with a strong foundation in Python, web development, 
@@ -174,9 +174,9 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="flex flex-wrap gap-4 pt-4"
+              className="hero-cta-group flex flex-wrap gap-3 sm:gap-4 pt-4 justify-center lg:justify-start"
             >
-              <a href="#projects" className="btn-primary px-10 py-4 text-base shadow-2xl shadow-indigo-500/30 group">
+              <a href="#projects" className="btn-primary px-7 sm:px-10 py-3 sm:py-4 text-sm sm:text-base shadow-2xl shadow-indigo-500/30 group">
                 <span className="relative z-10">Explore Work</span>
                 <motion.span 
                   className="ml-2 inline-block"
@@ -184,17 +184,16 @@ export default function Hero() {
                   transition={{ repeat: Infinity, duration: 1.5 }}
                 >→</motion.span>
               </a>
-              <a href="#contact" className="btn-outline px-10 py-4 text-base bg-white/5 backdrop-blur-sm border-white/10 hover:bg-[var(--primary)] hover:text-white transition-all">
+              <a href="#contact" className="btn-outline px-7 sm:px-10 py-3 sm:py-4 text-sm sm:text-base bg-white/5 backdrop-blur-sm border-white/10 hover:bg-[var(--primary)] hover:text-white transition-all">
                 Let's Talk
               </a>
             </motion.div>
 
-            {/* Social Context */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="flex items-center gap-6 pt-6 opacity-60"
+              className="flex items-center gap-4 sm:gap-6 pt-4 sm:pt-6 opacity-60 justify-center lg:justify-start"
             >
               <p className="text-xs font-black uppercase tracking-widest">Connect Worldwide</p>
               <div className="flex gap-4">
@@ -213,7 +212,7 @@ export default function Hero() {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 1 }}
-            className="relative flex flex-col items-center lg:items-end gap-12"
+            className="relative flex flex-col items-center gap-8 mt-8 lg:mt-0 lg:items-end lg:gap-12"
           >
             {/* Main Avatar Container */}
             <div className="relative group">
@@ -223,7 +222,7 @@ export default function Hero() {
                 className="absolute -inset-4 bg-gradient-to-tr from-[var(--primary)] to-[var(--secondary)] rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" 
               />
               
-              <div className="avatar-ring w-56 h-56 sm:w-72 sm:h-72 mx-auto relative z-10 scale-110">
+              <div className="avatar-ring w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 mx-auto relative z-10">
                 <div className="w-full h-full rounded-full flex items-center justify-center overflow-hidden border-[8px] border-[var(--bg)] shadow-inner"
                   style={{ background: 'var(--card-bg)' }}>
                   <img
@@ -248,7 +247,7 @@ export default function Hero() {
             </div>
 
             {/* Premium Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-xs sm:max-w-sm">
               {[
                 { end: 1, suffix: '+', label: 'Years Experience' },
                 { end: 10, suffix: '+', label: 'Major Projects' },

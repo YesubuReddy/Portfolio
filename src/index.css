@@ -398,52 +398,177 @@ body {
 @keyframes modal-up { from{opacity:0;transform:translateY(30px) scale(0.97)} to{opacity:1;transform:none} }
 
 /* ===========================
-   MOBILE RESPONSIVENESS OVERRIDES
+   GLOBAL MOBILE FUNDAMENTALS
+=========================== */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+img, video, svg, canvas {
+  max-width: 100%;
+}
+
+/* ===========================
+   TABLET (≤ 1024px)
+=========================== */
+@media (max-width: 1024px) {
+  .max-w-\[1440px\] { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+/* ===========================
+   MOBILE (≤ 768px)
 =========================== */
 @media (max-width: 768px) {
-  section { padding: 4rem 1.5rem !important; }
-  
-  .section-label { font-size: 0.65rem; padding: 3px 10px; }
-  
-  .btn-primary, .btn-outline { 
-    padding: 0.7rem 1.4rem; 
-    font-size: 0.85rem; 
-    justify-content: center;
-    width: 100%;
+  /* Sections */
+  section {
+    padding-top: 3.5rem !important;
+    padding-bottom: 3.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    overflow-x: hidden !important;
   }
 
-  .grid { gap: 1.5rem !important; }
-  
-  .project-card, .contact-card { padding: 20px !important; }
-  
-  .modal-panel { 
-    width: 95%; 
-    margin: 10px; 
-    max-height: 85vh;
+  /* Typography */
+  h1 { font-size: 2.25rem !important; line-height: 1.15 !important; }
+  h2 { font-size: 1.875rem !important; line-height: 1.2 !important; }
+  h3 { font-size: 1.25rem !important; }
+  .text-xl  { font-size: 1rem !important; }
+  .text-2xl { font-size: 1.2rem !important; }
+  .text-lg  { font-size: 0.95rem !important; }
+
+  /* Section decorators */
+  .section-label { font-size: 0.6rem; padding: 3px 10px; }
+  .section-line  { width: 30px; }
+
+  /* Buttons — only full-width inside flex-col, not everywhere */
+  .btn-primary, .btn-outline {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.82rem;
   }
-  
+
+  /* Cards */
+  .project-card { padding: 16px !important; border-radius: 16px !important; }
+  .contact-card { padding: 16px !important; border-radius: 16px !important; }
+  .cert-badge   { padding: 14px !important; border-radius: 14px !important; }
+
+  /* Grids — force single column unless overridden */
+  .grid { gap: 1rem !important; }
+
+  /* Modal */
+  .modal-backdrop { padding: 0.75rem; align-items: flex-end; }
+  .modal-panel {
+    width: 100%;
+    max-height: 88vh;
+    border-radius: 24px 24px 16px 16px;
+    margin: 0;
+  }
+
+  /* Toast */
   .toast {
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
     width: auto;
     max-width: none;
+    font-size: 0.8rem;
+    padding: 12px 14px;
   }
-  
+
+  /* Back to top */
   .back-to-top {
     bottom: 1rem;
     left: auto;
     right: 1rem;
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
   }
+
+  /* Scroll progress: thinner on mobile */
+  .scroll-progress-track { height: 2px; }
+
+  /* Filter tabs — compact */
+  .filter-tab {
+    padding: 6px 14px;
+    font-size: 0.72rem;
+  }
+
+  /* Form inputs — larger touch targets */
+  .form-input {
+    padding: 12px 14px;
+    font-size: 0.875rem;
+    border-radius: 12px;
+  }
+
+  /* Skill tag */
+  .skill-tag { font-size: 0.68rem; padding: 3px 10px; }
+
+  /* Timeline dot */
+  .timeline-dot { width: 10px; height: 10px; }
+
+  /* Hero background shapes — hide on mobile for perf */
+  .hero-glow-1, .hero-glow-2, .hero-glow-3 { display: none; }
+
+  /* Stats grid on Hero */
+  .hero-stats-grid { grid-template-columns: 1fr 1fr !important; gap: 0.75rem !important; }
 }
 
+/* ===========================
+   SMALL MOBILE (≤ 480px)
+=========================== */
 @media (max-width: 480px) {
-  h1 { font-size: 2.75rem !important; line-height: 1.1 !important; }
-  h2 { font-size: 2.25rem !important; }
-  .text-xl { font-size: 1rem !important; }
-  .text-2xl { font-size: 1.25rem !important; }
-  
-  .avatar-ring { width: 220px !important; height: 220px !important; }
+  section {
+    padding-left: 0.875rem !important;
+    padding-right: 0.875rem !important;
+  }
+
+  h1 { font-size: 2rem !important; }
+  h2 { font-size: 1.65rem !important; }
+
+  /* Avatar */
+  .avatar-ring { width: 180px !important; height: 180px !important; }
+
+  /* Modal full-screen */
+  .modal-panel { max-height: 92vh; border-radius: 20px 20px 0 0; }
+
+  /* Buttons in hero — stack and fill */
+  .hero-cta-group {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .hero-cta-group .btn-primary,
+  .hero-cta-group .btn-outline {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Cards tighter */
+  .project-card { padding: 14px !important; border-radius: 14px !important; }
+
+  /* Filter tabs wrap nicely */
+  .filter-tab { padding: 5px 12px; font-size: 0.7rem; }
+
+  /* Footer grid — single col */
+  footer .grid { grid-template-columns: 1fr !important; }
+
+  /* Form */
+  .form-input { padding: 11px 12px; }
+
+  /* Contact section hero-stats */
+  .contact-info-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ===========================
+   EXTRA SMALL (≤ 360px)
+=========================== */
+@media (max-width: 360px) {
+  h1 { font-size: 1.75rem !important; }
+  h2 { font-size: 1.5rem !important; }
+  section {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+  .avatar-ring { width: 150px !important; height: 150px !important; }
+  .btn-primary, .btn-outline { font-size: 0.78rem; padding: 0.6rem 1rem; }
 }

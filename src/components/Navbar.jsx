@@ -67,7 +67,8 @@ export default function Navbar() {
   }, [])
 
   return (
-    <nav
+    <>
+      <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled ? 'backdrop-blur-2xl border-b py-3 shadow-lg' : 'bg-transparent py-5'
       }`}
@@ -181,6 +182,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+    </nav>
 
       {/* Mobile drawer */}
       <AnimatePresence>
@@ -189,7 +191,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 lg:hidden"
+            className="fixed inset-0 z-[9999] lg:hidden"
           >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setMenuOpen(false)} />
             <motion.div
@@ -197,8 +199,14 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="absolute right-0 top-0 bottom-0 w-[80%] max-w-xs shadow-2xl flex flex-col"
-              style={{ background: 'var(--bg)', borderLeft: '1px solid var(--border)' }}
+              className="absolute right-0 top-0 bottom-0 w-[82%] max-w-[300px] shadow-2xl flex flex-col overflow-y-auto"
+              style={{ 
+                background: 'var(--bg)',
+                borderLeft: '1px solid var(--border)',
+                isolation: 'isolate',
+                backdropFilter: 'none',
+                WebkitBackdropFilter: 'none',
+              }}
             >
               <div className="p-8 pb-4 flex items-center justify-between">
                 <span className="text-xl font-black gradient-text">Menu</span>
@@ -212,8 +220,8 @@ export default function Navbar() {
                   <motion.a
                     key={link.href}
                     href={link.href}
-                    className={`block py-4 text-2xl font-black tracking-tight border-b border-white/5 transition-all duration-300`}
-                    style={{ color: active === link.id ? 'var(--primary)' : 'var(--text-main)' }}
+                    className={`block py-3 text-xl font-black tracking-tight border-b transition-all duration-300`}
+                    style={{ color: active === link.id ? 'var(--primary)' : 'var(--text-main)', borderColor: 'var(--border)' }}
                     onClick={() => setMenuOpen(false)}
                     initial={{ x: 30, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -245,7 +253,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   )
 }
 

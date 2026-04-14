@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 const projects = [
   {
@@ -216,21 +216,83 @@ function ProjectCard({ project, onOpenModal }) {
   )
 }
 
+
+const CARD_GAP = 20
+const CARD_WIDTH_MOBILE = 270
+const CARD_WIDTH_DESKTOP = 300
+
 export default function Projects() {
   const [filter, setFilter] = useState('all')
   const [modal, setModal] = useState(null)
+  const [activeIdx, setActiveIdx] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const trackRef = useRef(null)
+  const autoRef = useRef(null)
 
   const filtered = filter === 'all' ? projects : projects.filter(p => p.category === filter)
 
+  // Reset active index when filter changes
+  useEffect(() => { setActiveIdx(0) }, [filter])
+
+  const getCardWidth = () => {
+    if (typeof window === 'undefined') return CARD_WIDTH_DESKTOP
+    return window.innerWidth < 640 ? CARD_WIDTH_MOBILE : CARD_WIDTH_DESKTOP
+  }
+
+  const scrollTo = useCallback((idx) => {
+    if (!trackRef.current) return
+    const cw = getCardWidth()
+    const offset = idx * (cw + CARD_GAP)
+    trackRef.current.scrollTo({ left: offset, behavior: 'smooth' })
+    setActiveIdx(idx)
+  }, [])
+
+  const prev = useCallback(() => {
+    const next = activeIdx === 0 ? filtered.length - 1 : activeIdx - 1
+    scrollTo(next)
+  }, [activeIdx, filtered.length, scrollTo])
+
+  const next = useCallback(() => {
+    const next = activeIdx === filtered.length - 1 ? 0 : activeIdx + 1
+    scrollTo(next)
+  }, [activeIdx, filtered.length, scrollTo])
+
+  // Auto-advance every 3s
+  useEffect(() => {
+    if (isPaused || filtered.length <= 1) return
+    autoRef.current = setInterval(() => {
+      setActiveIdx(prev => {
+        const nextIdx = prev === filtered.length - 1 ? 0 : prev + 1
+        if (trackRef.current) {
+          const cw = getCardWidth()
+          trackRef.current.scrollTo({ left: nextIdx * (cw + CARD_GAP), behavior: 'smooth' })
+        }
+        return nextIdx
+      })
+    }, 3000)
+    return () => clearInterval(autoRef.current)
+  }, [isPaused, filtered.length])
+
+  // Sync dot indicator with manual scroll
+  const onScroll = () => {
+    if (!trackRef.current) return
+    const cw = getCardWidth()
+    const idx = Math.round(trackRef.current.scrollLeft / (cw + CARD_GAP))
+    setActiveIdx(Math.min(idx, filtered.length - 1))
+  }
+
   return (
-    <section id="projects" className="py-16 px-6 relative" style={{ background: 'var(--bg)' }}>
+    <section id="projects" className="py-16 relative" style={{ background: 'var(--bg)' }}>
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: 'radial-gradient(ellipse 60% 50% at 20% 50%, rgba(79,70,229,0.03) 0%, transparent 70%)' }} />
 
       <div className="max-w-[1440px] mx-auto relative z-10">
-        <div className="mb-10 text-center scroll-hidden px-4 md:px-12">
+
+        {/* Header */}
+        <div className="mb-8 text-center scroll-hidden px-4 md:px-12">
           <div className="section-label mb-4 mx-auto">Portfolio Highlights</div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: 'Space Grotesk, sans-serif', color: 'var(--text-main)' }}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4"
+            style={{ fontFamily: 'Space Grotesk, sans-serif', color: 'var(--text-main)' }}>
             Featured <span className="gradient-text">Projects</span>
           </h2>
           <div className="section-line mx-auto mb-8" />
@@ -238,61 +300,119 @@ export default function Projects() {
           {/* Filter tabs */}
           <div className="flex flex-wrap justify-center gap-2">
             {FILTERS.map(f => (
-              <button
-                key={f.value}
-                onClick={() => setFilter(f.value)}
-                className={`filter-tab ${filter === f.value ? 'active' : ''}`}
-              >
+              <button key={f.value} onClick={() => setFilter(f.value)}
+                className={`filter-tab ${filter === f.value ? 'active' : ''}`}>
                 {f.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* ── MOBILE: horizontal swipe scroll ── */}
-        <div className="block sm:hidden">
-          {filtered.length === 0 ? (
-            <div className="text-center py-16 px-4" style={{ color: 'var(--text-muted)' }}>
-              <div className="text-5xl mb-4">🔍</div>
-              <p className="font-bold">No projects in this category yet</p>
-            </div>
-          ) : (
-            <>
-              {/* Hint */}
-              <p className="text-center text-[10px] font-bold uppercase tracking-widest mb-3 opacity-50" style={{ color: 'var(--text-muted)' }}>
-                ← Swipe to explore →
-              </p>
-              <div
-                className="flex gap-4 overflow-x-auto pb-4 px-4"
-                style={{ scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
-              >
-                {filtered.map(project => (
-                  <div key={project.title} style={{ scrollSnapAlign: 'start' }}>
-                    <ProjectCard project={project} onOpenModal={setModal} />
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="text-center py-20 px-4" style={{ color: 'var(--text-muted)' }}>
+            <div className="text-5xl mb-4">🔍</div>
+            <p className="font-bold">No projects in this category yet</p>
+          </div>
+        ) : (
+          <>
+            {/* Carousel wrapper */}
+            <div
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={() => setIsPaused(true)}
+              onTouchEnd={() => setIsPaused(false)}>
 
-        {/* ── TABLET / DESKTOP: regular grid ── */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5 px-4 md:px-12">
-          {filtered.map(project => (
-            <div key={project.title} className="flex flex-col">
-              <ProjectCard project={project} onOpenModal={setModal} />
+              {/* ─── Track ─── */}
+              <div className="relative">
+                {/* Desktop-only: Left arrow */}
+                <button
+                  onClick={prev}
+                  aria-label="Previous project"
+                  className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-2xl items-center justify-center font-bold text-white shadow-xl transition-all duration-200 hover:scale-110 active:scale-95"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))', boxShadow: '0 8px 24px -4px rgba(79,70,229,0.45)' }}>
+                  ‹
+                </button>
+
+                {/* Desktop-only: Right arrow */}
+                <button
+                  onClick={next}
+                  aria-label="Next project"
+                  className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-2xl items-center justify-center font-bold text-white shadow-xl transition-all duration-200 hover:scale-110 active:scale-95"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))', boxShadow: '0 8px 24px -4px rgba(79,70,229,0.45)' }}>
+                  ›
+                </button>
+
+                {/* Desktop-only: Fade edges */}
+                <div className="hidden md:block absolute left-0 top-0 bottom-0 w-14 z-10 pointer-events-none"
+                  style={{ background: 'linear-gradient(to right, var(--bg), transparent)' }} />
+                <div className="hidden md:block absolute right-0 top-0 bottom-0 w-14 z-10 pointer-events-none"
+                  style={{ background: 'linear-gradient(to left, var(--bg), transparent)' }} />
+
+                {/* Scrollable track */}
+                <div
+                  ref={trackRef}
+                  onScroll={onScroll}
+                  className="flex gap-4 md:gap-5 overflow-x-auto pb-4 pt-2 px-[calc(50vw-135px)] md:px-14"
+                  style={{
+                    scrollSnapType: 'x mandatory',
+                    WebkitOverflowScrolling: 'touch',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                  }}>
+                  {filtered.map((project, idx) => (
+                    <div
+                      key={project.title}
+                      style={{ scrollSnapAlign: 'center', flexShrink: 0 }}
+                      className="w-[270px] sm:w-[300px]">
+                      <ProjectCard project={project} onOpenModal={setModal} active={idx === activeIdx} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dots + mobile arrows row */}
+              <div className="flex items-center justify-center gap-3 mt-4">
+                {/* Mobile-only: prev arrow */}
+                <button
+                  onClick={prev}
+                  aria-label="Previous project"
+                  className="md:hidden w-8 h-8 rounded-xl flex items-center justify-center font-bold text-white text-sm transition-all active:scale-90"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
+                  ‹
+                </button>
+
+                {/* Dot indicators */}
+                <div className="flex gap-2">
+                  {filtered.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => scrollTo(idx)}
+                      aria-label={`Go to project ${idx + 1}`}
+                      className="rounded-full transition-all duration-300"
+                      style={{
+                        width: idx === activeIdx ? '20px' : '7px',
+                        height: '7px',
+                        background: idx === activeIdx ? 'var(--primary)' : 'var(--border-solid)',
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Mobile-only: next arrow */}
+                <button
+                  onClick={next}
+                  aria-label="Next project"
+                  className="md:hidden w-8 h-8 rounded-xl flex items-center justify-center font-bold text-white text-sm transition-all active:scale-90"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary))' }}>
+                  ›
+                </button>
+              </div>
             </div>
-          ))}
-          {filtered.length === 0 && (
-            <div className="col-span-full text-center py-20" style={{ color: 'var(--text-muted)' }}>
-              <div className="text-5xl mb-4">🔍</div>
-              <p className="font-bold">No projects in this category yet</p>
-            </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* GitHub CTA */}
-        <div className="mt-14 text-center scroll-hidden px-4 md:px-12">
+        <div className="mt-12 text-center scroll-hidden px-4 md:px-12">
           <a href="https://github.com/YesubuReddy" target="_blank" rel="noopener noreferrer"
             className="btn-outline inline-flex px-10 py-4 shadow-sm">
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
